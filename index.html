@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexicon Studio - Web</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Sidebar Navegación -->
+    <nav id="sidebar" class="sidebar">
+        <div class="logo">
+            <h2>📚 Lexicon Studio</h2>
+        </div>
+        <ul>
+            <li><button id="btn-gestion" class="nav-btn active">Gestión de Palabras</button></li>
+            <li><button id="btn-juego" class="nav-btn">🎮 Jugar Ahorcado</button></li>
+            <li><button id="btn-stats" class="nav-btn">📊 Estadísticas</button></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main-content">
+        <!-- Dashboard Bienvenida / Stats -->
+        <section id="dashboard" class="section active">
+            <div class="welcome">
+                <h1>¡Bienvenido a Lexicon Studio Web!</h1>
+                <p id="stats-total">Total palabras: Cargando...</p>
+                <p>App responsive para móvil/PC. Gestiona diccionario y juega Ahorcado.</p>
+            </div>
+        </section>
+
+        <!-- Gestión Palabras -->
+        <section id="gestion" class="section">
+            <div class="header">
+                <input type="text" id="busqueda" placeholder="🔍 Buscar palabra...">
+</div>
+            <div id="lista-palabras" class="lista-container"></div>
+            <div id="modal-edit" class="modal">
+                <div class="modal-content">
+                    <h3 id="modal-title">Nueva Palabra</h3>
+                    <input type="text" id="input-word" placeholder="Palabra">
+                    <select id="input-cat">
+                        <option value="sust">Sustantivo</option>
+                        <option value="adj">Adjetivo</option>
+                        <option value="verb">Verbo</option>
+                        <!-- + from constantes -->
+                    </select>
+                    <textarea id="input-def" placeholder="Definición / Nota"></textarea>
+                    <div class="modal-buttons">
+                        <button id="btn-save">Guardar</button>
+                        <button id="btn-cancel">Cancelar</button>
+                        <button id="btn-delete" style="display:none;">Borrar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Juego Ahorcado -->
+        <section id="juego" class="section">
+            <div class="game-header">
+                <h2 id="game-title">¡Juega al Ahorcado!</h2>
+                <p id="game-hint">Pista: Cargando...</p>
+            </div>
+            <canvas id="canvas-ahorcado" width="300" height="400"></canvas>
+            <div id="palabra-mostrada"></div>
+            <div id="intentos-restantes">Intentos: 6</div>
+            <div id="teclado" class="teclado"></div>
+            <div id="game-win" class="game-overlay">
+                <h2>¡GANASTE!</h2>
+                <button onclick="newGame()">Nueva Partida</button>
+            </div>
+            <div id="game-lose" class="game-overlay">
+                <h2>¡PERDISTE!</h2>
+                <p id="palabra-final"></p>
+                <button onclick="newGame()">Nueva Partida</button>
+            </div>
+        </section>
+    </main>
+
+<script src="config-public.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+
+</body>
+</html>

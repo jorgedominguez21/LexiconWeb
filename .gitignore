@@ -1,0 +1,34 @@
+### Python/PyInstaller
+build/
+dist/
+lexicon.spec
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+### Config/DB secrets
+Config.ini
+seguro_tablas.txt
+
+### IDE
+.vscode/
+.idea/
+
+### OS
+.DS_Store
+Thumbs.db
+
+### Logs
+*.log
+
+### Tests (optional)
+test_supabase.py
+words.json
+config-public.js # Edit local with your keys
+
+### Keep: Web + Python source + docs
