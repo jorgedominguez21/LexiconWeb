@@ -7,80 +7,68 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Sidebar Navegación -->
+    <button id="menu-toggle" class="menu-toggle">☰</button>
+
     <nav id="sidebar" class="sidebar">
         <div class="logo">
             <h2>📚 Lexicon Studio</h2>
         </div>
         <ul>
-            <li><button id="btn-gestion" class="nav-btn active">Gestión de Palabras</button></li>
+            <li><button id="btn-dashboard" class="nav-btn active">Inicio</button></li>
+            <li><button id="btn-gestion" class="nav-btn">Gestión de Palabras</button></li>
             <li><button id="btn-juego" class="nav-btn">🎮 Jugar Ahorcado</button></li>
         </ul>
     </nav>
 
-    <!-- Main Content -->
     <main id="main-content">
-        <button id="menu-toggle" class="menu-toggle">☰</button>
-        <!-- Dashboard Bienvenida / Stats -->
         <section id="dashboard" class="section active">
             <div class="welcome">
                 <h1>¡Bienvenido a Lexicon Studio Web!</h1>
                 <p id="stats-total">Total palabras: Cargando...</p>
-                <p>App responsive para móvil/PC. Gestiona diccionario y juega Ahorcado.</p>
+                <p>App responsive para móvil/PC. Gestiona tu diccionario y juega al Ahorcado.</p>
             </div>
         </section>
 
-        <!-- Gestión Palabras -->
         <section id="gestion" class="section">
             <div class="header">
                 <input type="text" id="busqueda" placeholder="🔍 Buscar palabra...">
-</div>
-        <div id="lista-palabras" class="lista-container"></div>
-            <button id="btn-new-readonly" style="display:none;">+ Nueva (solo admin)</button>
+            </div>
+            <div id="lista-palabras" class="lista-container"></div>
+            
             <div id="modal-edit" class="modal">
                 <div class="modal-content">
-                    <h3 id="modal-title">Nueva Palabra</h3>
+                    <h3 id="modal-title">Detalle de Palabra</h3>
                     <input type="text" id="input-word" placeholder="Palabra" disabled>
-                    <select id="input-cat" disabled>
-                        <option value="sust">Sustantivo</option>
-                        <option value="adj">Adjetivo</option>
-                        <option value="verb">Verbo</option>
-                    </select>
+                    <select id="input-cat" disabled></select>
                     <textarea id="input-def" placeholder="Definición / Nota" disabled></textarea>
                     <div class="modal-buttons">
                         <button id="btn-save" style="display:none;">Guardar</button>
                         <button id="btn-cancel">Cerrar</button>
-                        <button id="btn-delete" style="display:none;">Borrar</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Juego Ahorcado -->
         <section id="juego" class="section">
             <div class="game-header">
                 <h2 id="game-title">¡Juega al Ahorcado!</h2>
                 <p id="game-hint">Pista: Cargando...</p>
             </div>
-            <canvas id="canvas-ahorcado" width="300" height="400"></canvas>
+            <canvas id="canvas-ahorcado" width="300" height="300"></canvas>
             <div id="palabra-mostrada"></div>
             <div id="intentos-restantes">Intentos: 6</div>
             <div id="teclado" class="teclado"></div>
-            <div id="game-win" class="game-overlay">
-                <h2>¡GANASTE!</h2>
-                <button onclick="newGame()">Nueva Partida</button>
-            </div>
-            <div id="game-lose" class="game-overlay">
-                <h2>¡PERDISTE!</h2>
+            
+            <div id="game-overlay" class="game-overlay">
+                <h2 id="overlay-msg">¡MENSAJE!</h2>
                 <p id="palabra-final"></p>
-                <button onclick="newGame()">Nueva Partida</button>
+                <button onclick="initJuego()">Nueva Partida</button>
             </div>
         </section>
     </main>
 
-<script src="config-public.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config-public.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
-
 </body>
 </html>
