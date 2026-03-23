@@ -1,5 +1,4 @@
-/* Style.css - Lexicon Studio Web Responsivo Completo */
-
+/* --- 1. BASE Y RESET --- */
 * {
     margin: 0;
     padding: 0;
@@ -11,9 +10,10 @@ body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     overflow-x: hidden;
+    color: #333;
 }
 
-/* Sidebar */
+/* --- 2. NAVEGACIÓN (SIDEBAR) --- */
 .sidebar {
     position: fixed;
     left: 0;
@@ -56,7 +56,7 @@ body {
     transform: translateX(5px);
 }
 
-/* Main Content */
+/* --- 3. CONTENIDO PRINCIPAL --- */
 main {
     margin-left: 250px;
     padding: 20px;
@@ -89,7 +89,7 @@ main {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Cards y Gestión */
+/* --- 4. CABECERA Y BUSCADOR --- */
 .header { display: flex; gap: 15px; margin-bottom: 20px; }
 #busqueda {
     flex: 1;
@@ -97,8 +97,11 @@ main {
     border: 2px solid #ddd;
     border-radius: 10px;
     font-size: 1.1em;
+    outline: none;
 }
+#busqueda:focus { border-color: #1f538d; }
 
+/* --- 5. TARJETAS (CARDS) --- */
 .lista-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -111,18 +114,72 @@ main {
     padding: 20px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.palabra-titulo { font-size: 1.4em; color: #1f538d; margin-bottom: 5px; }
+.palabra-card:active { transform: scale(0.98); }
+
+.palabra-titulo { 
+    font-size: 1.4em; 
+    color: #1f538d; 
+    margin-bottom: 5px; 
+    font-weight: bold;
+}
+
 .palabra-cat {
+    display: inline-block;
     background: #e67e22;
     color: white;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 15px;
     font-size: 0.8em;
+    font-weight: 600;
+    text-transform: capitalize;
+    margin-bottom: 10px;
 }
 
-/* Modal */
+/* --- 6. BOTONES DE ACCIÓN (RAE, WIKI, LEXICON) --- */
+.card-links {
+    margin-top: 15px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    flex-wrap: wrap;
+}
+
+/* Estilo común para todos los botones de la tarjeta */
+.link-ext, .link-lexicon {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+/* Botones secundarios (RAE, WIKI) */
+.link-ext {
+    background: #f0f4f8;
+    color: #555;
+    border: 1px solid #e1e4e8;
+}
+
+.link-ext:hover { background: #e0e8f0; }
+
+/* Botón principal (LEXICON) - El que resalta */
+.link-lexicon {
+    background: #eef4fb; 
+    color: #1f538d;
+    border: 1px solid #d0e0f0;
+    box-shadow: 0 2px 4px rgba(31, 83, 141, 0.1);
+}
+
+.link-lexicon:active { background: #d0e0f0; }
+
+/* --- 7. MODAL --- */
 .modal {
     display: none;
     position: fixed;
@@ -131,15 +188,35 @@ main {
     z-index: 3000;
 }
 .modal.active { display: flex; align-items: center; justify-content: center; }
+
 .modal-content {
-    background: white; padding: 25px; border-radius: 20px;
-    width: 90%; max-width: 500px;
+    background: white; 
+    padding: 30px; 
+    border-radius: 20px;
+    width: 90%; 
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
-.modal-content input, .modal-content select, .modal-content textarea {
+
+.modal-content input, .modal-content select {
     width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px;
 }
 
-/* Juego */
+#input-def {
+    width: 100%;
+    height: 250px; 
+    margin: 10px 0;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #fdfdfd;
+    resize: vertical;
+    line-height: 1.6;
+    font-size: 16px;
+    font-family: inherit;
+}
+
+/* --- 8. JUEGO --- */
 #canvas-ahorcado {
     display: block; margin: 0 auto;
     background: #fff; border-radius: 10px;
@@ -163,83 +240,20 @@ main {
 }
 .game-overlay.active { display: block; }
 
-/* Responsive */
+/* --- 9. DASHBOARD Y TEXTOS --- */
+.welcome h1 { font-size: 2.5rem; color: #1f538d; margin-bottom: 10px; text-align: center; }
+.subtitle { font-size: 1.2rem; color: #555; max-width: 600px; margin: 0 auto 20px auto; line-height: 1.5; text-align: center; }
+.signature {
+    margin-top: 40px; text-align: right; font-style: italic; color: #888; font-size: 0.9rem;
+    border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;
+}
+
+/* --- 10. RESPONSIVE --- */
 @media (max-width: 768px) {
     .sidebar { transform: translateX(-100%); }
     .sidebar.active { transform: translateX(0); }
     main { margin-left: 0; padding-top: 70px; }
     .menu-toggle { display: block; }
     .welcome h1 { font-size: 1.8em; }
-}
-/* --- MEJORAS DEL MODAL --- */
-.modal-content {
-    max-width: 600px; /* Más ancho para lectura cómoda */
-    width: 90%;
-    padding: 30px;
-}
-
-#input-def {
-    height: 250px; /* Caja mucho más alta para evitar el scroll excesivo */
-    resize: vertical; /* Permite al usuario estirarla si quiere */
-    line-height: 1.6;
-    font-size: 16px;
-    padding: 12px;
-    border: 1px solid #ccc;
-    background-color: #fdfdfd;
-}
-
-/* --- ESTILO ENLACES RAE/WIKI --- */
-.card-links {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
-}
-
-.card-links a {
-    background: #f0f4f8;
-    color: #1f538d;
-    padding: 5px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.8em;
-    font-weight: bold;
-    transition: background 0.2s;
-}
-
-.card-links a:hover {
-    background: #1f538d;
-    color: white;
-}
-
-/* --- AJUSTE CATEGORÍA --- */
-.palabra-cat {
-    display: inline-block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-.welcome h1 {
-    font-size: 2.5rem;
-    color: #1f538d;
-    margin-bottom: 10px;
-}
-
-.subtitle {
-    font-size: 1.2rem;
-    color: #555;
-    max-width: 600px;
-    margin: 0 auto 20px auto;
-    line-height: 1.5;
-}
-
-.signature {
-    margin-top: 40px;
-    text-align: right;
-    font-style: italic;
-    color: #888;
-    font-size: 0.9rem;
-    border-top: 1px solid rgba(0,0,0,0.05);
-    padding-top: 10px;
+    .lista-container { grid-template-columns: 1fr; } /* Una columna en móvil */
 }

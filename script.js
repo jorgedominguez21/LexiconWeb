@@ -1,4 +1,4 @@
-// script.js - Lexicon Studio Web Corregido (V2 - Con RAE/Wiki y Mejoras de Modal)
+// script.js - Lexicon Studio Web V2.5 (Sincronización y UI mejorada)
 class PalabrasEngine {
     constructor() {
         this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -56,7 +56,7 @@ function initUI() {
         menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
     }
 
-    // Buscador con retraso para rendimiento
+    // Buscador con retraso
     const inputBusqueda = document.getElementById('busqueda');
     if (inputBusqueda) {
         inputBusqueda.addEventListener('input', () => {
@@ -103,10 +103,9 @@ async function updateLista() {
         const card = document.createElement('div');
         card.className = 'palabra-card';
         
-        // Mapeo de categoría para mostrar nombre completo
         const categoriaNombre = catsMap[p.tipo] || p.tipo;
 
-        // Abrir modal al hacer clic en la tarjeta
+        // Clic en la tarjeta abre tu definición propia (Modal)
         card.onclick = () => {
             document.getElementById('modal-title').textContent = p.termino.toUpperCase();
             document.getElementById('input-word').value = p.termino;
@@ -119,8 +118,9 @@ async function updateLista() {
             <div class="palabra-titulo">${p.termino.toUpperCase()}</div>
             <span class="palabra-cat">${categoriaNombre}</span>
             <div class="card-links">
-                <a href="https://dle.rae.es/${p.termino}" target="_blank" onclick="event.stopPropagation();">RAE</a>
-                <a href="https://es.wiktionary.org/wiki/${p.termino}" target="_blank" onclick="event.stopPropagation();">WIKI</a>
+                <a href="https://dle.rae.es/${p.termino}" target="_blank" class="link-ext" onclick="event.stopPropagation();">RAE</a>
+                <a href="https://es.wiktionary.org/wiki/${p.termino}" target="_blank" class="link-ext" onclick="event.stopPropagation();">WIKI</a>
+                <span class="link-lexicon">📖 Definición</span>
             </div>
         `;
         lista.appendChild(card);
@@ -191,22 +191,22 @@ function dibujarAhorcado(paso) {
     if (paso === 0) {
         ctx.clearRect(0, 0, 300, 300);
         ctx.beginPath();
-        ctx.moveTo(50, 250); ctx.lineTo(250, 250); // Base
-        ctx.moveTo(100, 250); ctx.lineTo(100, 50); // Poste
-        ctx.moveTo(100, 50); ctx.lineTo(200, 50);  // Techo
-        ctx.moveTo(200, 50); ctx.lineTo(200, 80);  // Cuerda
+        ctx.moveTo(50, 250); ctx.lineTo(250, 250); 
+        ctx.moveTo(100, 250); ctx.lineTo(100, 50); 
+        ctx.moveTo(100, 50); ctx.lineTo(200, 50);  
+        ctx.moveTo(200, 50); ctx.lineTo(200, 80);  
         ctx.stroke();
         return;
     }
 
     ctx.beginPath();
     switch(paso) {
-        case 1: ctx.arc(200, 105, 25, 0, Math.PI * 2); break; // Cabeza
-        case 2: ctx.moveTo(200, 130); ctx.lineTo(200, 200); break; // Cuerpo
-        case 3: ctx.moveTo(200, 140); ctx.lineTo(170, 170); break; // Brazo izq
-        case 4: ctx.moveTo(200, 140); ctx.lineTo(230, 170); break; // Brazo der
-        case 5: ctx.moveTo(200, 200); ctx.lineTo(170, 240); break; // Pierna izq
-        case 6: ctx.moveTo(200, 200); ctx.lineTo(230, 240); break; // Pierna der
+        case 1: ctx.arc(200, 105, 25, 0, Math.PI * 2); break; 
+        case 2: ctx.moveTo(200, 130); ctx.lineTo(200, 200); break; 
+        case 3: ctx.moveTo(200, 140); ctx.lineTo(170, 170); break; 
+        case 4: ctx.moveTo(200, 140); ctx.lineTo(230, 170); break; 
+        case 5: ctx.moveTo(200, 200); ctx.lineTo(170, 240); break; 
+        case 6: ctx.moveTo(200, 200); ctx.lineTo(230, 240); break; 
     }
     ctx.stroke();
 }
