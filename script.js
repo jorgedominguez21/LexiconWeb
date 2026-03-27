@@ -20,9 +20,17 @@ class PalabrasEngine {
     }
 
     async listarRapido(filtro = '') {
-        const query = filtro.toLowerCase();
-        return this.words.filter(w => w.termino.toLowerCase().includes(query)).slice(0, 50);
-    }
+    // Función interna para limpiar acentos: "Ábaco" -> "abaco"
+    const normalizar = (texto) => 
+        texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+    const query = normalizar(filtro);
+    
+    return this.words.filter(w => {
+        const terminoSinAcentos = normalizar(w.termino);
+        return terminoSinAcentos.includes(query);
+    }).slice(0, 50);
+}
 
     getCategorias() {
         return { 
