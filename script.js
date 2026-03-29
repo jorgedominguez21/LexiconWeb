@@ -1,4 +1,4 @@
-// script.js - Lexicon Studio Web V3.0 (Edición Estudio & Sincronización)
+// script.js - Lexicon Studio Web V3.1 (Sincronización Total & Modo Estudio)
 class PalabrasEngine {
     constructor() {
         this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -13,7 +13,7 @@ class PalabrasEngine {
             const { data, error } = await this.supabase.from('palabras').select('*').order('termino');
             if (error) throw error;
             this.words = data || [];
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Error inicializando datos:", e); }
         this.loading = false;
         updateStats();
         updateLista();
@@ -49,7 +49,7 @@ let palabraActualEstudio = null;
 document.addEventListener('DOMContentLoaded', initUI);
 
 function initUI() {
-    // Navegación General
+    // Navegación
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const section = e.target.id.replace('btn-', '');
@@ -64,7 +64,7 @@ function initUI() {
         menuToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
     }
 
-    // Buscador con retraso
+    // Buscador
     const inputBusqueda = document.getElementById('busqueda');
     if (inputBusqueda) {
         inputBusqueda.addEventListener('input', () => {
@@ -73,15 +73,13 @@ function initUI() {
         });
     }
 
-    // Cerrar Modal
+    // Modal Edición
     const btnCancel = document.getElementById('btn-cancel');
     if (btnCancel) {
-        btnCancel.onclick = () => {
-            document.getElementById('modal-edit').classList.remove('active');
-        };
+        btnCancel.onclick = () => document.getElementById('modal-edit').classList.remove('active');
     }
 
-    // --- EVENTOS MODO ESTUDIO ---
+    // Eventos Modo Estudio
     const btnEstudioMenu = document.getElementById('btn-estudio');
     if (btnEstudioMenu) {
         btnEstudioMenu.onclick = () => {
@@ -91,9 +89,7 @@ function initUI() {
     }
 
     const btnComprobar = document.getElementById('btn-comprobar');
-    if (btnComprobar) {
-        btnComprobar.onclick = comprobarRespuesta;
-    }
+    if (btnComprobar) btnComprobar.onclick = comprobarRespuesta;
 
     const inputRespuesta = document.getElementById('input-respuesta');
     if (inputRespuesta) {
@@ -102,12 +98,9 @@ function initUI() {
         });
     }
 
-    // Cargar última sección visitada o Dashboard por defecto
+    // Persistencia de sección
     const ultimaSeccion = localStorage.getItem('seccionActiva') || 'dashboard';
     switchSection(ultimaSeccion);
-    
-    // Si la última sección era estudio, cargar palabra automáticamente
-    if (ultimaSeccion === 'estudio') cargarNuevaPalabraEstudio();
 }
 
 function switchSection(id) {
@@ -120,8 +113,7 @@ function switchSection(id) {
     if (targetSection) targetSection.classList.add('active');
     if (targetBtn) targetBtn.classList.add('active');
     
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) sidebar.classList.remove('active'); 
+    if (document.getElementById('sidebar')) document.getElementById('sidebar').classList.remove('active'); 
 
     localStorage.setItem('seccionActiva', id);
 
@@ -138,8 +130,7 @@ async function updateLista() {
     const lista = document.getElementById('lista-palabras');
     if (!lista) return;
     
-    const busquedaInput = document.getElementById('busqueda');
-    const busqueda = busquedaInput ? busquedaInput.value : '';
+    const busqueda = document.getElementById('busqueda').value;
     const palabras = await engine.listarRapido(busqueda);
     const catsMap = engine.getCategorias();
     
@@ -147,9 +138,6 @@ async function updateLista() {
     palabras.forEach(p => {
         const card = document.createElement('div');
         card.className = 'palabra-card';
-        
-        const categoriaNombre = catsMap[p.tipo] || p.tipo;
-
         card.onclick = () => {
             document.getElementById('modal-title').textContent = p.termino.toUpperCase();
             document.getElementById('input-word').value = p.termino;
@@ -160,10 +148,9 @@ async function updateLista() {
 
         card.innerHTML = `
             <div class="palabra-titulo">${p.termino.toUpperCase()}</div>
-            <span class="palabra-cat">${categoriaNombre}</span>
+            <span class="palabra-cat">${catsMap[p.tipo] || p.tipo}</span>
             <div class="card-links">
                 <a href="https://dle.rae.es/${p.termino}" target="_blank" class="link-ext" onclick="event.stopPropagation();">RAE</a>
-                <a href="https://es.wiktionary.org/wiki/${p.termino}" target="_blank" class="link-ext" onclick="event.stopPropagation();">WIKI</a>
                 <span class="link-lexicon">📖 Definición</span>
             </div>
         `;
@@ -171,30 +158,42 @@ async function updateLista() {
     });
 }
 
-// --- MODO ESTUDIO (ALGORITMO DE NIVELES) ---
+// --- MODO ESTUDIO (LÓGICA MEJORADA) ---
 async function cargarNuevaPalabraEstudio() {
     const feedback = document.getElementById('feedback-estudio');
     const input = document.getElementById('input-respuesta');
+    const txtDefinicion = document.getElementById('pista-definicion');
+
     if (feedback) feedback.textContent = '';
     if (input) {
         input.value = '';
         input.style.borderColor = '#ddd';
+        input.disabled = false;
         input.focus();
     }
 
-    // Traemos 10 candidatas con nivel más bajo
-    const { data, error } = await engine.supabase
-        .from('palabras')
-        .select('*')
-        .order('nivel', { ascending: true })
-        .limit(10);
+    if (txtDefinicion) txtDefinicion.textContent = "Buscando palabra en tu léxico...";
 
-    if (data && data.length > 0) {
-        // Elegimos una al azar de esas 10
-        palabraActualEstudio = data[Math.floor(Math.random() * data.length)];
-        document.getElementById('pista-definicion').textContent = `"${palabraActualEstudio.definicion}"`;
-    } else {
-        document.getElementById('pista-definicion').textContent = "No hay palabras para estudiar.";
+    try {
+        // Traemos palabras con nivel 0 o más bajo primero
+        const { data, error } = await engine.supabase
+            .from('palabras')
+            .select('*')
+            .order('nivel', { ascending: true })
+            .limit(25);
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+            // Aleatoriedad entre las de nivel bajo
+            palabraActualEstudio = data[Math.floor(Math.random() * data.length)];
+            txtDefinicion.textContent = palabraActualEstudio.definicion;
+        } else {
+            txtDefinicion.textContent = "No hay palabras guardadas.";
+        }
+    } catch (err) {
+        console.error(err);
+        txtDefinicion.textContent = "Error al conectar con la base de datos.";
     }
 }
 
@@ -203,11 +202,12 @@ async function comprobarRespuesta() {
     const feedback = document.getElementById('feedback-estudio');
     const respuesta = input.value.trim();
 
-    if (!palabraActualEstudio) return;
+    if (!palabraActualEstudio || input.disabled) return;
 
-    // Comparación estricta (puedes añadir .toLowerCase() si prefieres flexibilidad)
+    input.disabled = true; // Evita doble envío mientras carga
+
     if (respuesta === palabraActualEstudio.termino) {
-        feedback.innerHTML = '<span style="color: #27ae60;">✅ ¡Perfecto! Nivel subido.</span>';
+        feedback.innerHTML = '<span style="color: #27ae60;">✅ ¡Correcto! Nivel subido.</span>';
         input.style.borderColor = '#27ae60';
         
         await engine.supabase
@@ -215,9 +215,9 @@ async function comprobarRespuesta() {
             .update({ nivel: (palabraActualEstudio.nivel || 0) + 1 })
             .eq('id', palabraActualEstudio.id);
 
-        setTimeout(cargarNuevaPalabraEstudio, 1200);
+        setTimeout(cargarNuevaPalabraEstudio, 1500);
     } else {
-        feedback.innerHTML = `<span style="color: #e74c3c;">❌ Error. Era: ${palabraActualEstudio.termino}</span>`;
+        feedback.innerHTML = `<span style="color: #e74c3c;">❌ Error. Era: <strong>${palabraActualEstudio.termino}</strong></span>`;
         input.style.borderColor = '#e74c3c';
         
         await engine.supabase
@@ -225,7 +225,7 @@ async function comprobarRespuesta() {
             .update({ nivel: 0 })
             .eq('id', palabraActualEstudio.id);
             
-        setTimeout(cargarNuevaPalabraEstudio, 2500);
+        setTimeout(cargarNuevaPalabraEstudio, 3500); // Más tiempo para memorizar la correcta
     }
 }
 
@@ -241,8 +241,7 @@ async function initJuego() {
         fallos: 0,
         adivinadas: []
     };
-    
-    document.getElementById('game-hint').textContent = 'Pista: ' + gameState.pista;
+    document.getElementById('game-hint').textContent = 'Definición: ' + gameState.pista;
     document.getElementById('game-overlay').classList.remove('active');
     renderJuego();
     dibujarAhorcado(0);
@@ -272,9 +271,7 @@ function procesarLetra(l) {
         gameState.fallos++;
         dibujarAhorcado(gameState.fallos);
     }
-    
     renderJuego();
-    
     if (gameState.fallos >= 6) finalizarJuego(false);
     else if (gameState.palabra.split('').every(l => gameState.adivinadas.includes(l))) finalizarJuego(true);
 }
@@ -291,7 +288,6 @@ function dibujarAhorcado(paso) {
     const ctx = canvas.getContext('2d');
     ctx.lineWidth = 4;
     ctx.strokeStyle = '#1f538d';
-
     if (paso === 0) {
         ctx.clearRect(0, 0, 300, 300);
         ctx.beginPath();
@@ -302,7 +298,6 @@ function dibujarAhorcado(paso) {
         ctx.stroke();
         return;
     }
-
     ctx.beginPath();
     switch(paso) {
         case 1: ctx.arc(200, 105, 25, 0, Math.PI * 2); break; 
